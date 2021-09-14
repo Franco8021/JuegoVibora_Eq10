@@ -10,6 +10,7 @@ Exercises
 """
 
 from random import randrange
+from random import choice
 from turtle import *
 
 from freegames import square, vector
@@ -18,12 +19,17 @@ food = vector(0, 0)
 snake = [vector(10, 0)]
 aim = vector(0, -10)
 
+colorList = ['gray', 'blue', 'black', 'yellow', 'purple']
+snakeColor = choice(colorList)
+foodColor = choice(colorList)
+
+while snakeColor == foodColor:
+    foodColor = choice(colorList)
 
 def change(x, y):
     "Change snake direction."
     aim.x = x
     aim.y = y
-
 
 def inside(head):
     "Return True if head inside boundaries."
@@ -31,6 +37,7 @@ def inside(head):
 
 
 def move():
+    global snakeColor, foodColor
     "Move snake forward one segment."
     head = snake[-1].copy()
     head.move(aim)
@@ -42,19 +49,33 @@ def move():
 
     snake.append(head)
 
+    foodXlist = [food.x]
+    foodYlist = [food.y]
+    counter = -1
+    
     if head == food:
+        counter += 1        
         print('Snake:', len(snake))
-        food.x = randrange(-15, 15) * 10
-        food.y = randrange(-15, 15) * 10
+        food.x = (choice([-1, 0, 1]) * 10) + foodXlist[counter]
+        food.y = (choice([-1, 1]) * 10) + foodYlist[counter]
+        # food.x = randrange(-15, 15) * 10
+        # food.y = randrange(-15, 15) * 10
+        if not inside(food):
+            food.x = 10
+            food.y = 10
+            
+        foodXlist.append(food)
+        foodYlist.append(food)
+
     else:
         snake.pop(0)
 
     clear()
-
+    
     for body in snake:
-        square(body.x, body.y, 9, 'black')
-
-    square(food.x, food.y, 9, 'green')
+        square(body.x, body.y, 9, snakeColor)
+        
+    square(food.x, food.y, 9, foodColor)
     update()
     ontimer(move, 100)
 
